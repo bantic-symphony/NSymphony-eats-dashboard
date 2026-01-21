@@ -24,7 +24,7 @@ class DashboardPage extends StatelessWidget {
         ),
         BlocProvider(
           create: (_) =>
-              getIt<AttendanceBloc>()..add(const LoadTodayMealPreferenceCounts()),
+              getIt<AttendanceBloc>()..add(const SubscribeToTodayMealPreferenceCounts()),
         ),
       ],
       child: const _DashboardPageContent(),
@@ -41,33 +41,20 @@ class _DashboardPageContent extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text(
-          'Symphony Eats Dashboard',
+          'NSymphony Eats Dashboard',
           style: TextStyle(
+            fontSize: 22,
             fontWeight: FontWeight.bold,
             color: AppColors.textOnPrimary,
           ),
         ),
         backgroundColor: AppColors.primary,
         elevation: 0,
-        actions: [
-          // Refresh button
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Refresh',
-            onPressed: () {
-              // Reload both menu and attendance
-              context.read<MenuBloc>().add(const SubscribeToCurrentWeekMenu());
-              context
-                  .read<AttendanceBloc>()
-                  .add(const LoadTodayMealPreferenceCounts());
-            },
-          ),
-        ],
       ),
       body: Row(
         children: [
           // Menu Panel (3/4)
-          const Expanded(
+          Expanded(
             flex: 3,
             child: MenuPanel(),
           ),

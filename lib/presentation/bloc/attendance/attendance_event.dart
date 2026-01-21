@@ -12,3 +12,8 @@ sealed class AttendanceEvent extends Equatable {
 class LoadTodayMealPreferenceCounts extends AttendanceEvent {
   const LoadTodayMealPreferenceCounts();
 }
+
+/// Event to subscribe to today's meal preference counts stream for real-time updates
+class SubscribeToTodayMealPreferenceCounts extends AttendanceEvent {
+  const SubscribeToTodayMealPreferenceCounts();
+}

@@ -17,4 +17,9 @@ abstract interface class FirestoreDataSource {
   /// - 'glutenFree': int count of gluten-free meals
   /// - 'nonPork': int count of non-pork meals
   Future<Map<String, dynamic>?> getTodayAttendanceAndPreferences();
+
+  /// Stream that listens to real-time updates for today's attendance and preferences.
+  ///
+  /// Returns a stream of maps with the same structure as getTodayAttendanceAndPreferences.
+  Stream<Map<String, dynamic>?> getTodayAttendanceAndPreferencesStream();
 }

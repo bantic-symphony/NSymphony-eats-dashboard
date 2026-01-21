@@ -9,6 +9,7 @@ import 'package:nsymphony_eats_dashboard/domain/repository/menu_repository.dart'
 import 'package:nsymphony_eats_dashboard/domain/usecase/get_current_week_menu_usecase.dart';
 import 'package:nsymphony_eats_dashboard/domain/usecase/get_today_meal_preference_counts_usecase.dart';
 import 'package:nsymphony_eats_dashboard/domain/usecase/stream_current_week_menu_usecase.dart';
+import 'package:nsymphony_eats_dashboard/domain/usecase/stream_today_meal_preference_counts_usecase.dart';
 import 'package:nsymphony_eats_dashboard/presentation/bloc/attendance/attendance_bloc.dart';
 import 'package:nsymphony_eats_dashboard/presentation/bloc/menu/menu_bloc.dart';
 
@@ -48,13 +49,17 @@ Future<void> setupDependencyInjection() async {
     () => GetTodayMealPreferenceCountsUseCase(getIt()),
   );
 
+  getIt.registerFactory<StreamTodayMealPreferenceCountsUseCase>(
+    () => StreamTodayMealPreferenceCountsUseCase(getIt()),
+  );
+
   // BLoCs (Factory for fresh instances)
   getIt.registerFactory<MenuBloc>(
     () => MenuBloc(getIt(), getIt()),
   );
 
   getIt.registerFactory<AttendanceBloc>(
-    () => AttendanceBloc(getIt()),
+    () => AttendanceBloc(getIt(), getIt()),
   );
 
   // Wait for all async registrations to complete

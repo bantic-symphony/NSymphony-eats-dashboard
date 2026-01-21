@@ -209,4 +209,125 @@ class FirestoreDataSourceImpl implements FirestoreDataSource {
       rethrow;
     }
   }
+
+  @override
+  Stream<Map<String, dynamic>?> getTodayAttendanceAndPreferencesStream() {
+    final now = DateTime.now();
+    final today = DateFormat('yyyy-MM-dd').format(now);
+
+    AppLogger.log('Setting up real-time stream for attendance: $today', tag: 'FIRESTORE');
+
+    return _firestore
+        .collection(FirebaseConstants.dailyLogsCollection)
+        .doc(today)
+        .snapshots()
+        .asyncMap((snapshot) async {
+      try {
+        if (!snapshot.exists || snapshot.data() == null) {
+          AppLogger.log('Stream update: No attendance for today: $today', tag: 'FIRESTORE');
+          return {
+            'cardNumbers': <String>[],
+            'regular': 0,
+            'vegetarian': 0,
+            'glutenFree': 0,
+            'nonPork': 0,
+          };
+        }
+
+        final data = snapshot.data()!;
+
+        // Parse card numbers from entries array
+        final entries = data['entries'] as List<dynamic>?;
+        final cardNumbers = entries
+                ?.map((entry) {
+                  if (entry is Map<String, dynamic>) {
+                    return entry['cardNumber']?.toString() ?? '';
+                  }
+                  return entry.toString();
+                })
+                .where((cardNumber) => cardNumber.isNotEmpty)
+                .toList() ??
+            [];
+
+        AppLogger.log('Stream update: Found ${cardNumbers.length} attendees', tag: 'FIRESTORE');
+
+        // Get meal preferences for attendees
+        if (cardNumbers.isEmpty) {
+          return {
+            'cardNumbers': <String>[],
+            'regular': 0,
+            'vegetarian': 0,
+            'glutenFree': 0,
+            'nonPork': 0,
+          };
+        }
+
+        // Fetch meal preferences in batches (Firestore whereIn limit is 10)
+        final allDocs = <QueryDocumentSnapshot>[];
+        for (var i = 0; i < cardNumbers.length; i += 10) {
+          final batch = cardNumbers.skip(i).take(10).toList();
+
+          final snapshot = await _firestore
+              .collection(FirebaseConstants.userMealPreferencesCollection)
+              .where(FieldPath.documentId, whereIn: batch)
+              .get();
+
+          allDocs.addAll(snapshot.docs);
+        }
+
+        // Count meal types
+        var regularCount = 0;
+        var vegetarianCount = 0;
+        var glutenFreeCount = 0;
+        var nonPorkCount = 0;
+
+        for (final doc in allDocs) {
+          final docData = doc.data() as Map<String, dynamic>?;
+          final mealType = docData?['mealType'] as String?;
+          switch (mealType) {
+            case 'regular':
+              regularCount++;
+              break;
+            case 'vegetarian':
+              vegetarianCount++;
+              break;
+            case 'glutenFree':
+              glutenFreeCount++;
+              break;
+            case 'nonPork':
+              nonPorkCount++;
+              break;
+          }
+        }
+
+        AppLogger.success(
+          'Stream update: Total=${cardNumbers.length}, Regular=$regularCount, Veg=$vegetarianCount, GF=$glutenFreeCount, NP=$nonPorkCount',
+          tag: 'FIRESTORE',
+        );
+
+        return {
+          'cardNumbers': cardNumbers,
+          'regular': regularCount,
+          'vegetarian': vegetarianCount,
+          'glutenFree': glutenFreeCount,
+          'nonPork': nonPorkCount,
+        };
+      } catch (e, stackTrace) {
+        AppLogger.error(
+          'Stream error for attendance',
+          tag: 'FIRESTORE',
+          error: e,
+          stackTrace: stackTrace,
+        );
+        return null;
+      }
+    }).handleError((error, stackTrace) {
+      AppLogger.error(
+        'Stream error for attendance',
+        tag: 'FIRESTORE',
+        error: error,
+        stackTrace: stackTrace,
+      );
+    });
+  }
 }

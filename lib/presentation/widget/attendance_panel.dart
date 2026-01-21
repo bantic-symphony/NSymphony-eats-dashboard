@@ -89,7 +89,7 @@ class AttendancePanel extends StatelessWidget {
           const Text(
             'Attendance',
             style: TextStyle(
-              fontSize: 18,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
@@ -98,7 +98,7 @@ class AttendancePanel extends StatelessWidget {
           Text(
             dateFormat.format(counts.date),
             style: const TextStyle(
-              fontSize: 12,
+              fontSize: 14,
               color: AppColors.textSecondary,
             ),
           ),
@@ -125,7 +125,7 @@ class AttendancePanel extends StatelessWidget {
                     'Total Attendees',
                     style: TextStyle(
                       color: AppColors.textOnPrimary,
-                      fontSize: 12,
+                      fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -133,7 +133,7 @@ class AttendancePanel extends StatelessWidget {
                   Text(
                     '${counts.totalAttendees}',
                     style: const TextStyle(
-                      fontSize: 32,
+                      fontSize: 36,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textOnPrimary,
                     ),
@@ -148,7 +148,7 @@ class AttendancePanel extends StatelessWidget {
           const Text(
             'Meal Preferences',
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 16,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
@@ -219,7 +219,7 @@ class AttendancePanel extends StatelessWidget {
                           Text(
                             '${counts.noPreferenceCount}',
                             style: const TextStyle(
-                              fontSize: 16,
+                              fontSize: 18,
                               fontWeight: FontWeight.bold,
                               color: AppColors.warning,
                             ),
@@ -229,7 +229,7 @@ class AttendancePanel extends StatelessWidget {
                             'No preference set',
                             style: TextStyle(
                               color: AppColors.textSecondary,
-                              fontSize: 11,
+                              fontSize: 12,
                             ),
                           ),
                         ],
@@ -246,7 +246,7 @@ class AttendancePanel extends StatelessWidget {
           Text(
             'Last updated: ${DateFormat('HH:mm:ss').format(DateTime.now())}',
             style: const TextStyle(
-              fontSize: 11,
+              fontSize: 12,
               color: AppColors.textSecondary,
             ),
             textAlign: TextAlign.center,
@@ -287,7 +287,7 @@ class AttendancePanel extends StatelessWidget {
                   child: Text(
                     label,
                     style: const TextStyle(
-                      fontSize: 13,
+                      fontSize: 15,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
                     ),
@@ -296,7 +296,7 @@ class AttendancePanel extends StatelessWidget {
                 Text(
                   '$count',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: color,
                   ),
@@ -317,7 +317,7 @@ class AttendancePanel extends StatelessWidget {
             Text(
               '${(percentage * 100).toStringAsFixed(0)}%',
               style: TextStyle(
-                fontSize: 11,
+                fontSize: 13,
                 color: color,
                 fontWeight: FontWeight.w600,
               ),

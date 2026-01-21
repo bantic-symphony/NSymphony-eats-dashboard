@@ -16,9 +16,12 @@ class MenuPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
+      fit: StackFit.expand,
       children: [
         // Decorative background
-        const DecorativeBackground(),
+        Positioned.fill(
+          child: DecorativeBackground(key: ValueKey('decorative_background')),
+        ),
 
         // Menu content
         BlocBuilder<MenuBloc, MenuState>(
@@ -46,7 +49,7 @@ class MenuPanel extends StatelessWidget {
                   state.message,
                   style: const TextStyle(
                     color: AppColors.textSecondary,
-                    fontSize: 18,
+                    fontSize: 16,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -70,7 +73,7 @@ class MenuPanel extends StatelessWidget {
                   state.message,
                   style: const TextStyle(
                     color: AppColors.error,
-                    fontSize: 18,
+                    fontSize: 16,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -176,7 +179,7 @@ class MenuPanel extends StatelessWidget {
                   Text(
                     day.weekday.displayName.toUpperCase(),
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: isToday ? AppColors.primary : AppColors.textPrimary,
                     ),
@@ -186,7 +189,7 @@ class MenuPanel extends StatelessWidget {
                   Text(
                     dateFormat.format(day.date),
                     style: const TextStyle(
-                      fontSize: 12,
+                      fontSize: 14,
                       color: AppColors.textSecondary,
                     ),
                     textAlign: TextAlign.center,
@@ -249,7 +252,7 @@ class MenuPanel extends StatelessWidget {
           style: const TextStyle(
             color: AppColors.textSecondary,
             fontStyle: FontStyle.italic,
-            fontSize: 12,
+            fontSize: 14,
           ),
           textAlign: TextAlign.center,
         ),
@@ -271,7 +274,7 @@ class MenuPanel extends StatelessWidget {
           style: const TextStyle(
             color: AppColors.textSecondary,
             fontStyle: FontStyle.italic,
-            fontSize: 12,
+            fontSize: 14,
           ),
           textAlign: TextAlign.center,
         ),
@@ -304,7 +307,7 @@ class MenuPanel extends StatelessWidget {
               child: Text(
                 label,
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: 15,
                   fontWeight: FontWeight.bold,
                   color: iconColor,
                 ),
@@ -320,7 +323,7 @@ class MenuPanel extends StatelessWidget {
             child: Text(
               '• ${item.name}',
               style: const TextStyle(
-                fontSize: 12,
+                fontSize: 14,
                 color: AppColors.textPrimary,
                 height: 1.3,
               ),

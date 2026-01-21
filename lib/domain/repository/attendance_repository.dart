@@ -6,4 +6,7 @@ import 'package:nsymphony_eats_dashboard/domain/repository/menu_repository.dart'
 abstract class AttendanceRepository {
   /// Get today's meal preference counts
   Future<Result<AttendanceCount, AppError>> getTodayMealPreferenceCounts();
+
+  /// Stream today's meal preference counts for real-time updates
+  Stream<Result<AttendanceCount, AppError>> streamTodayMealPreferenceCounts();
 }
