@@ -45,10 +45,20 @@ flutter pub get
 
 ### 2. Firebase Configuration
 
-The app is already configured to use the `nsymphony-eats-prod` Firebase project. If you need to reconfigure:
+**Note:** `firebase_options.dart` is not tracked in git for security reasons.
 
-1. Update `lib/firebase_options.dart` with your Firebase project credentials
-2. Ensure Firestore security rules allow read access to:
+To configure Firebase:
+
+1. Copy the example file:
+   ```bash
+   cp lib/firebase_options.dart.example lib/firebase_options.dart
+   ```
+
+2. Get your Firebase config from: [Firebase Console](https://console.firebase.google.com/project/YOUR_PROJECT/settings/general)
+
+3. Update `lib/firebase_options.dart` with your actual Firebase project credentials
+
+4. Ensure Firestore security rules allow read access to:
    - `menus` collection
    - `daily_logs` collection
    - `user_meal_preferences` collection

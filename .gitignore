@@ -60,9 +60,9 @@ app.*.map.json
 
 # Firebase
 .firebase/
-.firebaserc
 firebase-debug.log
 firestore-debug.log
+lib/firebase_options.dart
 
 # Generated files
 *.g.dart
