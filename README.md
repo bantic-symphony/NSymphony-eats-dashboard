@@ -108,7 +108,22 @@ The project is already configured for Firebase Hosting with:
    - Primary URL: https://nsymphony-eats-prod.web.app
    - Alternative: https://nsymphony-eats-prod.firebaseapp.com
 
-### Full Build & Deploy (One Command)
+### Quick Deploy Script (Recommended)
+
+Use the provided deployment script for easy one-command deployment:
+
+```bash
+./deploy.sh
+```
+
+This script will:
+1. Build the Flutter web app for production
+2. Deploy to Firebase Hosting
+3. Show you the live URLs
+
+### Manual Build & Deploy
+
+Alternatively, you can run the commands manually:
 
 ```bash
 flutter build web --release && firebase deploy --only hosting

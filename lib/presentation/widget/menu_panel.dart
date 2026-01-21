@@ -7,6 +7,7 @@ import 'package:nsymphony_eats_dashboard/presentation/bloc/menu/menu_bloc.dart';
 import 'package:nsymphony_eats_dashboard/presentation/bloc/menu/menu_state.dart';
 import 'package:nsymphony_eats_dashboard/presentation/resources/app_colors.dart';
 import 'package:nsymphony_eats_dashboard/presentation/resources/app_dimens.dart';
+import 'package:nsymphony_eats_dashboard/presentation/widget/decorative_background.dart';
 
 /// Widget displaying the weekly menu (3/4 of the screen)
 class MenuPanel extends StatelessWidget {
@@ -14,15 +15,21 @@ class MenuPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<MenuBloc, MenuState>(
-      builder: (context, state) {
-        if (state is MenuLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
+    return Stack(
+      children: [
+        // Decorative background
+        const DecorativeBackground(),
 
-        if (state is MenuLoaded) {
-          return _buildMenuContent(context, state.menu.days);
-        }
+        // Menu content
+        BlocBuilder<MenuBloc, MenuState>(
+          builder: (context, state) {
+            if (state is MenuLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (state is MenuLoaded) {
+              return _buildMenuContent(context, state.menu.days);
+            }
 
         if (state is MenuEmpty) {
           return Center(
@@ -72,8 +79,10 @@ class MenuPanel extends StatelessWidget {
           );
         }
 
-        return const SizedBox.shrink();
-      },
+            return const SizedBox.shrink();
+          },
+        ),
+      ],
     );
   }
 
@@ -128,7 +137,6 @@ class MenuPanel extends StatelessWidget {
 
     return Card(
       elevation: isToday ? 6 : 2,
-      color: isToday ? AppColors.primary.withValues(alpha: 0.05) : null,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
         side: isToday
