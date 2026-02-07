@@ -40,34 +40,39 @@ class _DashboardPageContent extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text(
-          'NSymphony Eats Dashboard',
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textOnPrimary,
-          ),
-        ),
         backgroundColor: AppColors.primary,
-        elevation: 0,
+        elevation: 4,
+        toolbarHeight: 80,
+        title: const Row(
+          children: [
+            Icon(
+              Icons.restaurant_menu,
+              size: 36,
+              color: AppColors.textOnPrimary,
+            ),
+            SizedBox(width: 16),
+            Text(
+              'NSymphony Eats - Weekly Menu',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textOnPrimary,
+              ),
+            ),
+          ],
+        ),
       ),
-      body: Row(
+      body: Column(
         children: [
-          // Menu Panel (3/4)
+          // Menu Panel (takes most of the height)
           Expanded(
-            flex: 3,
+            flex: 7,
             child: MenuPanel(),
           ),
 
-          // Divider
-          Container(
-            width: 1,
-            color: AppColors.divider,
-          ),
-
-          // Attendance Panel (1/4)
+          // Attendance Panel (bottom strip)
           const Expanded(
-            flex: 1,
+            flex: 3,
             child: AttendancePanel(),
           ),
         ],
