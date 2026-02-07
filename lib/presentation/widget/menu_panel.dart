@@ -10,8 +10,56 @@ import 'package:nsymphony_eats_dashboard/presentation/resources/app_dimens.dart'
 import 'package:nsymphony_eats_dashboard/presentation/widget/decorative_background.dart';
 
 /// Widget displaying the weekly menu (3/4 of the screen)
-class MenuPanel extends StatelessWidget {
+class MenuPanel extends StatefulWidget {
   const MenuPanel({super.key});
+
+  @override
+  State<MenuPanel> createState() => _MenuPanelState();
+}
+
+class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
+  late List<AnimationController> _controllers;
+  late List<Animation<double>> _slideAnimations;
+  late List<Animation<double>> _fadeAnimations;
+
+  @override
+  void initState() {
+    super.initState();
+    _controllers = List.generate(
+      5,
+      (index) => AnimationController(
+        duration: Duration(milliseconds: 600 + (index * 100)),
+        vsync: this,
+      ),
+    );
+
+    _slideAnimations = _controllers.map((controller) {
+      return Tween<double>(begin: 50, end: 0).animate(
+        CurvedAnimation(parent: controller, curve: Curves.easeOutCubic),
+      );
+    }).toList();
+
+    _fadeAnimations = _controllers.map((controller) {
+      return Tween<double>(begin: 0, end: 1).animate(
+        CurvedAnimation(parent: controller, curve: Curves.easeIn),
+      );
+    }).toList();
+
+    // Start animations with delay
+    for (int i = 0; i < _controllers.length; i++) {
+      Future.delayed(Duration(milliseconds: i * 100), () {
+        if (mounted) _controllers[i].forward();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    for (var controller in _controllers) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +75,9 @@ class MenuPanel extends StatelessWidget {
         BlocBuilder<MenuBloc, MenuState>(
           builder: (context, state) {
             if (state is MenuLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(
+                child: CircularProgressIndicator(strokeWidth: 4),
+              );
             }
 
             if (state is MenuLoaded) {
@@ -41,15 +91,16 @@ class MenuPanel extends StatelessWidget {
               children: [
                 const Icon(
                   Icons.restaurant_menu_outlined,
-                  size: 64,
+                  size: 96,
                   color: AppColors.textSecondary,
                 ),
-                const SizedBox(height: AppDimens.spacing16),
+                const SizedBox(height: AppDimens.spacing24),
                 Text(
                   state.message,
                   style: const TextStyle(
                     color: AppColors.textSecondary,
-                    fontSize: 16,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w500,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -65,15 +116,16 @@ class MenuPanel extends StatelessWidget {
               children: [
                 const Icon(
                   Icons.error_outline,
-                  size: 64,
+                  size: 96,
                   color: AppColors.error,
                 ),
-                const SizedBox(height: AppDimens.spacing16),
+                const SizedBox(height: AppDimens.spacing24),
                 Text(
                   state.message,
                   style: const TextStyle(
                     color: AppColors.error,
-                    fontSize: 16,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w500,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -90,115 +142,103 @@ class MenuPanel extends StatelessWidget {
   }
 
   Widget _buildMenuContent(BuildContext context, List<DayMenu> days) {
-    // Split days into two rows: 3 on top, 2 on bottom
-    final topRowDays = days.take(3).toList();
-    final bottomRowDays = days.skip(3).take(2).toList();
-
     return Padding(
-      padding: const EdgeInsets.all(AppDimens.spacing16),
-      child: Column(
-        children: [
-          // Top row with 3 cards - takes up half the space
-          Expanded(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: topRowDays.map((day) {
-                return Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacing8),
-                    child: _buildDayCard(context, day),
-                  ),
-                );
-              }).toList(),
+      padding: const EdgeInsets.all(AppDimens.spacing48),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: days.map((day) {
+          return Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacing12),
+              child: _buildDayCard(context, day),
             ),
-          ),
-          const SizedBox(height: AppDimens.spacing16),
-          // Bottom row with 2 centered cards - takes up half the space
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: bottomRowDays.map((day) {
-                return SizedBox(
-                  width: (MediaQuery.of(context).size.width * 0.75 - AppDimens.spacing16 * 2) / 3,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacing8),
-                    child: _buildDayCard(context, day),
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-        ],
+          );
+        }).toList(),
       ),
     );
   }
 
   Widget _buildDayCard(BuildContext context, DayMenu day) {
-    final dateFormat = DateFormat('d.MM');
+    final dateFormat = DateFormat('MMM d');
     final isToday = DateUtils.isSameDay(day.date, DateTime.now());
 
-    return Card(
-      elevation: isToday ? 6 : 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
-        side: isToday
-            ? const BorderSide(color: AppColors.primary, width: 3)
-            : BorderSide.none,
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: isToday ? 1.0 : 0.75),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isToday ? 0.08 : 0.04),
+            blurRadius: isToday ? 16 : 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+        border: isToday
+            ? Border.all(color: AppColors.primary.withValues(alpha: 0.3), width: 2.5)
+            : Border.all(color: Colors.black.withValues(alpha: 0.08), width: 1.5),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppDimens.spacing12),
+      child: _buildDayCardContent(day, dateFormat, isToday),
+    );
+  }
+
+  Widget _buildDayCardContent(DayMenu day, DateFormat dateFormat, bool isToday) {
+    return Padding(
+        padding: const EdgeInsets.all(AppDimens.spacing24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
           children: [
-              // Header
-              Column(
-                children: [
-                  if (isToday)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppDimens.spacing8,
-                        vertical: AppDimens.spacing4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        borderRadius:
-                            BorderRadius.circular(AppDimens.radiusSmall),
-                      ),
-                      child: const Text(
-                        'TODAY',
-                        style: TextStyle(
-                          color: AppColors.textOnPrimary,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 10,
-                        ),
+            // Header
+            Column(
+              children: [
+                if (isToday)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppDimens.spacing12,
+                      vertical: AppDimens.spacing6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Text(
+                      'TODAY',
+                      style: TextStyle(
+                        color: AppColors.textOnPrimary,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                        letterSpacing: 1.5,
                       ),
                     ),
-                  if (isToday) const SizedBox(height: AppDimens.spacing4),
-                  Text(
-                    day.weekday.displayName.toUpperCase(),
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: isToday ? AppColors.primary : AppColors.textPrimary,
-                    ),
-                    textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: AppDimens.spacing4),
-                  Text(
-                    dateFormat.format(day.date),
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                    ),
-                    textAlign: TextAlign.center,
+                if (isToday) const SizedBox(height: AppDimens.spacing12),
+                Text(
+                  day.weekday.displayName.toUpperCase(),
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w800,
+                    color: isToday ? AppColors.primary : AppColors.textPrimary,
+                    letterSpacing: 0.8,
                   ),
-                ],
-              ),
-              const SizedBox(height: AppDimens.spacing12),
-              const Divider(height: 1),
-              const SizedBox(height: AppDimens.spacing12),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: AppDimens.spacing6),
+                Text(
+                  dateFormat.format(day.date),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textSecondary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+            const SizedBox(height: AppDimens.spacing16),
+            Container(
+              height: 2,
+              color: AppColors.divider.withValues(alpha: 0.2),
+            ),
+            const SizedBox(height: AppDimens.spacing16),
 
               // Menu content
               if (day.isClosed && day.note != null) ...[
@@ -215,7 +255,7 @@ class MenuPanel extends StatelessWidget {
                     items: day.regular,
                   ),
                   if (day.vege.isNotEmpty)
-                    const SizedBox(height: AppDimens.spacing12),
+                    const SizedBox(height: AppDimens.spacing20),
                 ],
 
                 // Vegetarian meals
@@ -234,8 +274,7 @@ class MenuPanel extends StatelessWidget {
               ],
             ],
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildClosedNote(BuildContext context, String note) {
@@ -243,16 +282,17 @@ class MenuPanel extends StatelessWidget {
       children: [
         const Icon(
           Icons.event_busy,
-          size: 32,
+          size: 48,
           color: AppColors.textSecondary,
         ),
-        const SizedBox(height: AppDimens.spacing8),
+        const SizedBox(height: AppDimens.spacing12),
         Text(
           note,
           style: const TextStyle(
             color: AppColors.textSecondary,
             fontStyle: FontStyle.italic,
-            fontSize: 14,
+            fontSize: 20,
+            height: 1.4,
           ),
           textAlign: TextAlign.center,
         ),
@@ -265,16 +305,17 @@ class MenuPanel extends StatelessWidget {
       children: [
         const Icon(
           Icons.info_outline,
-          size: 32,
+          size: 48,
           color: AppColors.textSecondary,
         ),
-        const SizedBox(height: AppDimens.spacing8),
+        const SizedBox(height: AppDimens.spacing12),
         Text(
           note ?? 'No menu available',
           style: const TextStyle(
             color: AppColors.textSecondary,
             fontStyle: FontStyle.italic,
-            fontSize: 14,
+            fontSize: 20,
+            height: 1.4,
           ),
           textAlign: TextAlign.center,
         ),
@@ -299,16 +340,16 @@ class MenuPanel extends StatelessWidget {
           children: [
             Icon(
               icon,
-              size: 16,
+              size: 22,
               color: iconColor,
             ),
-            const SizedBox(width: AppDimens.spacing4),
+            const SizedBox(width: AppDimens.spacing8),
             Flexible(
               child: Text(
                 label,
                 style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
                   color: iconColor,
                 ),
               ),
@@ -319,13 +360,14 @@ class MenuPanel extends StatelessWidget {
         // Menu items
         ...items.map(
           (item) => Padding(
-            padding: const EdgeInsets.only(bottom: AppDimens.spacing4),
+            padding: const EdgeInsets.only(bottom: AppDimens.spacing6),
             child: Text(
               '• ${item.name}',
               style: const TextStyle(
-                fontSize: 14,
+                fontSize: 17,
                 color: AppColors.textPrimary,
-                height: 1.3,
+                height: 1.5,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
