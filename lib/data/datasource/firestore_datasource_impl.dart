@@ -154,10 +154,11 @@ class FirestoreDataSourceImpl implements FirestoreDataSource {
                 return entry.toString();
               })
               .where((cardNumber) => cardNumber.isNotEmpty)
+              .toSet() // Remove duplicates
               .toList() ??
           [];
 
-      AppLogger.log('Found ${cardNumbers.length} attendees for today (from ${entries?.length ?? 0} entries)', tag: 'FIRESTORE');
+      AppLogger.log('Found ${cardNumbers.length} unique attendees for today (from ${entries?.length ?? 0} entries)', tag: 'FIRESTORE');
 
       // Get meal preferences for attendees
       if (cardNumbers.isEmpty) {
@@ -273,10 +274,11 @@ class FirestoreDataSourceImpl implements FirestoreDataSource {
                   return entry.toString();
                 })
                 .where((cardNumber) => cardNumber.isNotEmpty)
+                .toSet() // Remove duplicates
                 .toList() ??
             [];
 
-        AppLogger.log('Stream update: Found ${cardNumbers.length} attendees', tag: 'FIRESTORE');
+        AppLogger.log('Stream update: Found ${cardNumbers.length} unique attendees', tag: 'FIRESTORE');
 
         // Get meal preferences for attendees
         if (cardNumbers.isEmpty) {
