@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:nsymphony_eats_dashboard/domain/model/day_menu.dart';
 import 'package:nsymphony_eats_dashboard/domain/model/menu_item.dart';
+import 'package:nsymphony_eats_dashboard/presentation/bloc/attendance/attendance_bloc.dart';
+import 'package:nsymphony_eats_dashboard/presentation/bloc/attendance/attendance_state.dart';
 import 'package:nsymphony_eats_dashboard/presentation/bloc/menu/menu_bloc.dart';
 import 'package:nsymphony_eats_dashboard/presentation/bloc/menu/menu_state.dart';
 import 'package:nsymphony_eats_dashboard/presentation/resources/app_colors.dart';
@@ -162,119 +164,201 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
     final dateFormat = DateFormat('MMM d');
     final isToday = DateUtils.isSameDay(day.date, DateTime.now());
 
-    return Container(
+    final card = Container(
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: isToday ? 1.0 : 0.75),
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: isToday ? 0.08 : 0.04),
-            blurRadius: isToday ? 16 : 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
+        boxShadow: isToday
+            ? [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.30),
+                  blurRadius: 28,
+                  spreadRadius: 2,
+                  offset: const Offset(0, 4),
+                ),
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ]
+            : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 10,
+                  offset: const Offset(0, 3),
+                ),
+              ],
         border: isToday
-            ? Border.all(color: AppColors.primary.withValues(alpha: 0.3), width: 2.5)
+            ? Border.all(color: AppColors.primary.withValues(alpha: 0.45), width: 2.5)
             : Border.all(color: Colors.black.withValues(alpha: 0.08), width: 1.5),
       ),
       child: _buildDayCardContent(day, dateFormat, isToday),
     );
+
+    if (!isToday) return card;
+
+    return Transform.scale(
+      scale: 1.05,
+      child: card,
+    );
   }
 
   Widget _buildDayCardContent(DayMenu day, DateFormat dateFormat, bool isToday) {
-    return Padding(
-        padding: const EdgeInsets.all(AppDimens.spacing24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Header
-            Column(
+    // Reserve space at the bottom for the attendance chip bar when showing today
+    const double chipsAreaHeight = 130.0;
+
+    return Stack(
+      children: [
+        // Card content fills the card, with bottom space reserved for chips
+        Positioned.fill(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(
+              AppDimens.spacing24,
+              AppDimens.spacing24,
+              AppDimens.spacing24,
+              isToday ? chipsAreaHeight : AppDimens.spacing24,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (isToday)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppDimens.spacing12,
-                      vertical: AppDimens.spacing6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: const Text(
-                      'TODAY',
-                      style: TextStyle(
-                        color: AppColors.textOnPrimary,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 14,
-                        letterSpacing: 1.5,
+                // Header
+                Column(
+                  children: [
+                    if (isToday) ...[
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppDimens.spacing12,
+                          vertical: AppDimens.spacing6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: const Text(
+                          'TODAY',
+                          style: TextStyle(
+                            color: AppColors.textOnPrimary,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
                       ),
+                      const SizedBox(height: AppDimens.spacing12),
+                    ],
+                    Text(
+                      day.weekday.displayName.toUpperCase(),
+                      style: TextStyle(
+                        fontSize: isToday ? 52 : 34,
+                        fontWeight: FontWeight.w800,
+                        color: isToday ? AppColors.primary : AppColors.textPrimary,
+                        letterSpacing: 0.8,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                  ),
-                if (isToday) const SizedBox(height: AppDimens.spacing12),
-                Text(
-                  day.weekday.displayName.toUpperCase(),
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w800,
-                    color: isToday ? AppColors.primary : AppColors.textPrimary,
-                    letterSpacing: 0.8,
-                  ),
-                  textAlign: TextAlign.center,
+                    const SizedBox(height: AppDimens.spacing6),
+                    Text(
+                      dateFormat.format(day.date),
+                      style: TextStyle(
+                        fontSize: isToday ? 34 : 26,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textSecondary,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
-                const SizedBox(height: AppDimens.spacing6),
-                Text(
-                  dateFormat.format(day.date),
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textSecondary,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
+                const SizedBox(height: AppDimens.spacing16),
+                Container(height: 2, color: AppColors.divider.withValues(alpha: 0.2)),
+                const SizedBox(height: AppDimens.spacing16),
+
+                // Menu content
+                if (day.isClosed && day.note != null) ...[
+                  _buildClosedNote(context, day.note!),
+                ] else if (day.hasMenu) ...[
+                  if (day.regular.isNotEmpty) ...[
+                    _buildMealSection(
+                      context,
+                      mealType: MealType.regular,
+                      icon: Icons.restaurant,
+                      iconColor: AppColors.primary,
+                      label: 'Regular',
+                      items: day.regular,
+                      isToday: isToday,
+                    ),
+                    if (day.vege.isNotEmpty)
+                      const SizedBox(height: AppDimens.spacing20),
+                  ],
+                  if (day.vege.isNotEmpty) ...[
+                    _buildMealSection(
+                      context,
+                      mealType: MealType.vegetarian,
+                      icon: Icons.eco,
+                      iconColor: AppColors.success,
+                      label: 'Vegetarian',
+                      items: day.vege,
+                      isToday: isToday,
+                    ),
+                  ],
+                ] else ...[
+                  _buildNoMenuNote(context, day.note),
+                ],
               ],
             ),
-            const SizedBox(height: AppDimens.spacing16),
-            Container(
-              height: 2,
-              color: AppColors.divider.withValues(alpha: 0.2),
-            ),
-            const SizedBox(height: AppDimens.spacing16),
-
-              // Menu content
-              if (day.isClosed && day.note != null) ...[
-                _buildClosedNote(context, day.note!),
-              ] else if (day.hasMenu) ...[
-                // Regular meals
-                if (day.regular.isNotEmpty) ...[
-                  _buildMealSection(
-                    context,
-                    mealType: MealType.regular,
-                    icon: Icons.restaurant,
-                    iconColor: AppColors.primary,
-                    label: 'Regular',
-                    items: day.regular,
-                  ),
-                  if (day.vege.isNotEmpty)
-                    const SizedBox(height: AppDimens.spacing20),
-                ],
-
-                // Vegetarian meals
-                if (day.vege.isNotEmpty) ...[
-                  _buildMealSection(
-                    context,
-                    mealType: MealType.vegetarian,
-                    icon: Icons.eco,
-                    iconColor: AppColors.success,
-                    label: 'Vegetarian',
-                    items: day.vege,
-                  ),
-                ],
-              ] else ...[
-                _buildNoMenuNote(context, day.note),
-              ],
-            ],
+          ),
         ),
-      );
+
+        // Attendance counts — absolutely positioned at the bottom
+        if (isToday)
+          Positioned(
+            bottom: AppDimens.spacing16,
+            left: AppDimens.spacing16,
+            right: AppDimens.spacing16,
+            child: BlocBuilder<AttendanceBloc, AttendanceState>(
+              builder: (context, state) {
+                if (state is! AttendanceCountsLoaded) return const SizedBox.shrink();
+                final counts = state.counts;
+                return IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        child: _buildCountChip(
+                          icon: Icons.restaurant,
+                          count: counts.regularCount,
+                          color: AppColors.regular,
+                          label: 'Regular',
+                        ),
+                      ),
+                      const SizedBox(width: AppDimens.spacing8),
+                      Expanded(
+                        child: _buildCountChip(
+                          icon: Icons.eco,
+                          count: counts.vegetarianCount,
+                          color: AppColors.vegetarian,
+                          label: 'Vegetarian',
+                        ),
+                      ),
+                      if (counts.noPreferenceCount > 0) ...[
+                        const SizedBox(width: AppDimens.spacing8),
+                        Expanded(
+                          child: _buildCountChip(
+                            icon: Icons.help_outline,
+                            count: counts.noPreferenceCount,
+                            color: AppColors.warning,
+                            label: 'No Pref.',
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+      ],
+    );
   }
 
   Widget _buildClosedNote(BuildContext context, String note) {
@@ -323,6 +407,50 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
     );
   }
 
+  Widget _buildCountChip({
+    required IconData icon,
+    required int count,
+    required Color color,
+    required String label,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppDimens.spacing12,
+        vertical: AppDimens.spacing12,
+      ),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(AppDimens.radiusLarge),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 20, color: Colors.white.withValues(alpha: 0.85)),
+          const SizedBox(height: AppDimens.spacing4),
+          Text(
+            '$count',
+            style: const TextStyle(
+              fontSize: 48,
+              fontWeight: FontWeight.w900,
+              color: Colors.white,
+              height: 1,
+            ),
+          ),
+          const SizedBox(height: AppDimens.spacing4),
+          Text(
+            label.toUpperCase(),
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: Colors.white.withValues(alpha: 0.8),
+              letterSpacing: 0.8,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildMealSection(
     BuildContext context, {
     required MealType mealType,
@@ -330,6 +458,7 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
     required Color iconColor,
     required String label,
     required List<MenuItem> items,
+    bool isToday = false,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -338,17 +467,13 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              size: 22,
-              color: iconColor,
-            ),
+            Icon(icon, size: isToday ? 34 : 28, color: iconColor),
             const SizedBox(width: AppDimens.spacing8),
             Flexible(
               child: Text(
                 label,
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: isToday ? 30 : 24,
                   fontWeight: FontWeight.w700,
                   color: iconColor,
                 ),
@@ -363,8 +488,8 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
             padding: const EdgeInsets.only(bottom: AppDimens.spacing6),
             child: Text(
               '• ${item.name}',
-              style: const TextStyle(
-                fontSize: 17,
+              style: TextStyle(
+                fontSize: isToday ? 28 : 22,
                 color: AppColors.textPrimary,
                 height: 1.5,
                 fontWeight: FontWeight.w500,

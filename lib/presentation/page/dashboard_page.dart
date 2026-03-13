@@ -6,7 +6,6 @@ import 'package:nsymphony_eats_dashboard/presentation/bloc/attendance/attendance
 import 'package:nsymphony_eats_dashboard/presentation/bloc/menu/menu_bloc.dart';
 import 'package:nsymphony_eats_dashboard/presentation/bloc/menu/menu_event.dart';
 import 'package:nsymphony_eats_dashboard/presentation/resources/app_colors.dart';
-import 'package:nsymphony_eats_dashboard/presentation/widget/attendance_panel.dart';
 import 'package:nsymphony_eats_dashboard/presentation/widget/menu_panel.dart';
 
 /// Dashboard page displaying weekly menu and attendance side by side.
@@ -62,21 +61,7 @@ class _DashboardPageContent extends StatelessWidget {
           ],
         ),
       ),
-      body: Column(
-        children: [
-          // Menu Panel (takes most of the height)
-          Expanded(
-            flex: 7,
-            child: MenuPanel(),
-          ),
-
-          // Attendance Panel (bottom strip)
-          const Expanded(
-            flex: 3,
-            child: AttendancePanel(),
-          ),
-        ],
-      ),
+      body: const MenuPanel(),
     );
   }
 }

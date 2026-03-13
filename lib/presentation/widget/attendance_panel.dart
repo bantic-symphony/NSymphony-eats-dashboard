@@ -100,18 +100,17 @@ class AttendancePanel extends StatelessWidget {
 
   Widget _buildContent(BuildContext context, AttendanceCountsLoaded state) {
     final counts = state.counts;
-    final dateFormat = DateFormat('MMMM d, yyyy');
 
     return Container(
       color: Colors.white.withValues(alpha: 0.5),
       padding: const EdgeInsets.symmetric(
         horizontal: AppDimens.spacing48,
-        vertical: AppDimens.spacing24,
+        vertical: AppDimens.spacing8,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Left: Header with Date and Time
+          // Left: Date
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,16 +118,16 @@ class AttendancePanel extends StatelessWidget {
               const Text(
                 'Today',
                 style: TextStyle(
-                  fontSize: 28,
+                  fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: AppColors.textPrimary,
                 ),
               ),
-              const SizedBox(height: AppDimens.spacing6),
+              const SizedBox(height: AppDimens.spacing4),
               Text(
-                dateFormat.format(counts.date),
+                DateFormat('MMMM d, yyyy').format(counts.date),
                 style: const TextStyle(
-                  fontSize: 16,
+                  fontSize: 13,
                   fontWeight: FontWeight.w500,
                   color: AppColors.textSecondary,
                 ),
@@ -137,7 +136,7 @@ class AttendancePanel extends StatelessWidget {
               Text(
                 DateFormat('HH:mm').format(DateTime.now()),
                 style: const TextStyle(
-                  fontSize: 14,
+                  fontSize: 12,
                   color: AppColors.textSecondary,
                   fontWeight: FontWeight.w500,
                 ),
@@ -145,9 +144,9 @@ class AttendancePanel extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(width: AppDimens.spacing48),
+          const SizedBox(width: AppDimens.spacing32),
 
-          // Center: Meal Stats (Horizontal)
+          // Meal Stats
           Expanded(
             child: Row(
               children: [
@@ -159,7 +158,7 @@ class AttendancePanel extends StatelessWidget {
                     icon: Icons.restaurant,
                   ),
                 ),
-                const SizedBox(width: AppDimens.spacing24),
+                const SizedBox(width: AppDimens.spacing12),
                 Expanded(
                   child: _buildCompactStatCard(
                     label: 'Vegetarian',
@@ -169,7 +168,7 @@ class AttendancePanel extends StatelessWidget {
                   ),
                 ),
                 if (counts.noPreferenceCount > 0) ...[
-                  const SizedBox(width: AppDimens.spacing24),
+                  const SizedBox(width: AppDimens.spacing12),
                   Expanded(
                     child: _buildCompactStatCard(
                       label: 'No Pref.',
@@ -182,7 +181,6 @@ class AttendancePanel extends StatelessWidget {
               ],
             ),
           ),
-
         ],
       ),
     );
@@ -196,50 +194,46 @@ class AttendancePanel extends StatelessWidget {
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: AppDimens.spacing20,
-        vertical: AppDimens.spacing16,
+        horizontal: AppDimens.spacing16,
+        vertical: AppDimens.spacing8,
       ),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.95),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppDimens.radiusLarge),
         border: Border.all(
           color: color.withValues(alpha: 0.3),
-          width: 2,
+          width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: color.withValues(alpha: 0.12),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
+            color: color.withValues(alpha: 0.1),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            icon,
-            size: 36,
-            color: color,
-          ),
-          const SizedBox(height: AppDimens.spacing8),
+          Icon(icon, size: 22, color: color),
+          const SizedBox(height: AppDimens.spacing4),
           Text(
             '$count',
             style: TextStyle(
-              fontSize: 42,
+              fontSize: 36,
               fontWeight: FontWeight.w900,
               color: color,
               height: 1,
             ),
           ),
-          const SizedBox(height: AppDimens.spacing6),
+          const SizedBox(height: AppDimens.spacing4),
           Text(
             label.toUpperCase(),
             style: const TextStyle(
-              fontSize: 13,
+              fontSize: 11,
               fontWeight: FontWeight.w700,
               color: AppColors.textSecondary,
-              letterSpacing: 0.8,
+              letterSpacing: 0.6,
             ),
             textAlign: TextAlign.center,
           ),
