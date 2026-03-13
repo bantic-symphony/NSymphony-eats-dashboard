@@ -145,13 +145,13 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
 
   Widget _buildMenuContent(BuildContext context, List<DayMenu> days) {
     return Padding(
-      padding: const EdgeInsets.all(AppDimens.spacing48),
+      padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacing16, vertical: AppDimens.spacing24),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: days.map((day) {
           return Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacing12),
+              padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacing6),
               child: _buildDayCard(context, day),
             ),
           );
@@ -171,9 +171,9 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
         boxShadow: isToday
             ? [
                 BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.30),
-                  blurRadius: 28,
-                  spreadRadius: 2,
+                  color: AppColors.primary.withValues(alpha: 0.40),
+                  blurRadius: 40,
+                  spreadRadius: 4,
                   offset: const Offset(0, 4),
                 ),
                 BoxShadow(
@@ -196,12 +196,7 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
       child: _buildDayCardContent(day, dateFormat, isToday),
     );
 
-    if (!isToday) return card;
-
-    return Transform.scale(
-      scale: 1.05,
-      child: card,
-    );
+    return card;
   }
 
   Widget _buildDayCardContent(DayMenu day, DateFormat dateFormat, bool isToday) {
@@ -225,28 +220,6 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
                 // Header
                 Column(
                   children: [
-                    if (isToday) ...[
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppDimens.spacing12,
-                          vertical: AppDimens.spacing6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: const Text(
-                          'TODAY',
-                          style: TextStyle(
-                            color: AppColors.textOnPrimary,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14,
-                            letterSpacing: 1.5,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: AppDimens.spacing12),
-                    ],
                     Text(
                       day.weekday.displayName.toUpperCase(),
                       style: TextStyle(
@@ -325,7 +298,6 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
                     children: [
                       Expanded(
                         child: _buildCountChip(
-                          icon: Icons.restaurant,
                           count: counts.regularCount,
                           color: AppColors.regular,
                           label: 'Regular',
@@ -334,7 +306,6 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
                       const SizedBox(width: AppDimens.spacing8),
                       Expanded(
                         child: _buildCountChip(
-                          icon: Icons.eco,
                           count: counts.vegetarianCount,
                           color: AppColors.vegetarian,
                           label: 'Vegetarian',
@@ -344,7 +315,6 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
                         const SizedBox(width: AppDimens.spacing8),
                         Expanded(
                           child: _buildCountChip(
-                            icon: Icons.help_outline,
                             count: counts.noPreferenceCount,
                             color: AppColors.warning,
                             label: 'No Pref.',
@@ -408,7 +378,6 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
   }
 
   Widget _buildCountChip({
-    required IconData icon,
     required int count,
     required Color color,
     required String label,
@@ -425,8 +394,6 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 20, color: Colors.white.withValues(alpha: 0.85)),
-          const SizedBox(height: AppDimens.spacing4),
           Text(
             '$count',
             style: const TextStyle(
