@@ -1,6 +1,6 @@
 # NSymphony Eats Dashboard
 
-Flutter **web** dashboard for office TVs: weekly lunch menus and today’s attendance from **Firestore**, deployed on **Firebase Hosting**. **Clean Architecture**, **BLoC**, real-time menu updates.
+A Flutter web dashboard that displays weekly lunch menus and daily attendance statistics. Designed for continuous display on company TV screens.
 
 ## Features
 
@@ -86,35 +86,48 @@ python3 -m http.server 8080
 
 ## Deployment to Firebase Hosting
 
-### Initial setup (already in repo)
+### Initial Setup (Already Completed)
 
-- `firebase.json` — Hosting (`public`: `build/web`, SPA rewrites to `index.html`)
-- `.firebaserc` — default Firebase project
+The project is already configured for Firebase Hosting with:
+- `firebase.json` - Hosting configuration
+- `.firebaserc` - Project configuration
 
-### One-command deploy (recommended)
+### Deploy to Production
 
-From the project root:
+1. **Build the web app**:
+   ```bash
+   flutter build web --release
+   ```
+
+2. **Deploy to Firebase Hosting**:
+   ```bash
+   firebase deploy --only hosting
+   ```
+
+3. **Access your dashboard**:
+   - Primary URL: https://nsymphony-eats-prod.web.app
+   - Alternative: https://nsymphony-eats-prod.firebaseapp.com
+
+### Quick Deploy Script (Recommended)
+
+Use the provided deployment script for easy one-command deployment:
 
 ```bash
-chmod +x deploy_web.sh   # first time only
-./deploy_web.sh
+./deploy.sh
 ```
 
-This runs `flutter build web --release`, then `firebase deploy --only hosting`. You must be logged in (`firebase login`) and have Flutter + Firebase CLI installed.
+This script will:
+1. Build the Flutter web app for production
+2. Deploy to Firebase Hosting
+3. Show you the live URLs
 
-After deploy, **refresh** the site (hard refresh if the browser cached the old bundle).
+### Manual Build & Deploy
 
-### Manual deploy
+Alternatively, you can run the commands manually:
 
 ```bash
-flutter build web --release
-firebase deploy --only hosting
+flutter build web --release && firebase deploy --only hosting
 ```
-
-### Live URLs (default project)
-
-- https://nsymphony-eats-prod.web.app
-- https://nsymphony-eats-prod.firebaseapp.com
 
 ## Firebase Hosting Details
 
