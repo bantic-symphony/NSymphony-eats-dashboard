@@ -22,7 +22,21 @@ class FirestoreDataSourceImpl implements FirestoreDataSource {
           .get();
 
       if (!doc.exists || doc.data() == null) {
-        AppLogger.log('Menu not found for week: $weekId', tag: 'FIRESTORE');
+        AppLogger.log('❌ Menu not found for week: $weekId', tag: 'FIRESTORE');
+
+        // Check what menu documents actually exist
+        AppLogger.log('Checking available menu documents...', tag: 'FIRESTORE');
+        final availableMenus = await _firestore
+            .collection(FirebaseConstants.menusCollection)
+            .orderBy(FieldPath.documentId, descending: true)
+            .limit(10)
+            .get();
+
+        AppLogger.log('Found ${availableMenus.docs.length} menu documents:', tag: 'FIRESTORE');
+        for (final doc in availableMenus.docs) {
+          AppLogger.log('  📄 Document ID: ${doc.id}', tag: 'FIRESTORE');
+        }
+
         return null;
       }
 
@@ -47,10 +61,23 @@ class FirestoreDataSourceImpl implements FirestoreDataSource {
         .collection(FirebaseConstants.menusCollection)
         .doc(weekId)
         .snapshots()
-        .map((snapshot) {
+        .asyncMap((snapshot) async {
       try {
         if (!snapshot.exists || snapshot.data() == null) {
-          AppLogger.log('Stream update: Menu not found for week: $weekId', tag: 'FIRESTORE');
+          AppLogger.log('❌ Stream update: Menu not found for week: $weekId', tag: 'FIRESTORE');
+
+          // Check what menu documents actually exist
+          final availableMenus = await _firestore
+              .collection(FirebaseConstants.menusCollection)
+              .orderBy(FieldPath.documentId, descending: true)
+              .limit(10)
+              .get();
+
+          AppLogger.log('Available menu documents (${availableMenus.docs.length} found):', tag: 'FIRESTORE');
+          for (final doc in availableMenus.docs) {
+            AppLogger.log('  📄 ${doc.id}', tag: 'FIRESTORE');
+          }
+
           return null;
         }
         AppLogger.success('Stream update: Menu received for week: $weekId', tag: 'FIRESTORE');
@@ -127,10 +154,11 @@ class FirestoreDataSourceImpl implements FirestoreDataSource {
                 return entry.toString();
               })
               .where((cardNumber) => cardNumber.isNotEmpty)
+              .toSet() // Remove duplicates
               .toList() ??
           [];
 
-      AppLogger.log('Found ${cardNumbers.length} attendees for today (from ${entries?.length ?? 0} entries)', tag: 'FIRESTORE');
+      AppLogger.log('Found ${cardNumbers.length} unique attendees for today (from ${entries?.length ?? 0} entries)', tag: 'FIRESTORE');
 
       // Get meal preferences for attendees
       if (cardNumbers.isEmpty) {
@@ -246,10 +274,11 @@ class FirestoreDataSourceImpl implements FirestoreDataSource {
                   return entry.toString();
                 })
                 .where((cardNumber) => cardNumber.isNotEmpty)
+                .toSet() // Remove duplicates
                 .toList() ??
             [];
 
-        AppLogger.log('Stream update: Found ${cardNumbers.length} attendees', tag: 'FIRESTORE');
+        AppLogger.log('Stream update: Found ${cardNumbers.length} unique attendees', tag: 'FIRESTORE');
 
         // Get meal preferences for attendees
         if (cardNumbers.isEmpty) {

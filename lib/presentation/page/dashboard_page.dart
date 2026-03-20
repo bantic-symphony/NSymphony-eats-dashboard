@@ -6,7 +6,6 @@ import 'package:nsymphony_eats_dashboard/presentation/bloc/attendance/attendance
 import 'package:nsymphony_eats_dashboard/presentation/bloc/menu/menu_bloc.dart';
 import 'package:nsymphony_eats_dashboard/presentation/bloc/menu/menu_event.dart';
 import 'package:nsymphony_eats_dashboard/presentation/resources/app_colors.dart';
-import 'package:nsymphony_eats_dashboard/presentation/widget/attendance_panel.dart';
 import 'package:nsymphony_eats_dashboard/presentation/widget/menu_panel.dart';
 
 /// Dashboard page displaying weekly menu and attendance side by side.
@@ -40,38 +39,29 @@ class _DashboardPageContent extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text(
-          'NSymphony Eats Dashboard',
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textOnPrimary,
-          ),
-        ),
         backgroundColor: AppColors.primary,
-        elevation: 0,
+        elevation: 4,
+        toolbarHeight: 80,
+        title: const Row(
+          children: [
+            Icon(
+              Icons.restaurant_menu,
+              size: 36,
+              color: AppColors.textOnPrimary,
+            ),
+            SizedBox(width: 16),
+            Text(
+              'NSymphony Eats - Weekly Menu',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textOnPrimary,
+              ),
+            ),
+          ],
+        ),
       ),
-      body: Row(
-        children: [
-          // Menu Panel (3/4)
-          Expanded(
-            flex: 3,
-            child: MenuPanel(),
-          ),
-
-          // Divider
-          Container(
-            width: 1,
-            color: AppColors.divider,
-          ),
-
-          // Attendance Panel (1/4)
-          const Expanded(
-            flex: 1,
-            child: AttendancePanel(),
-          ),
-        ],
-      ),
+      body: const MenuPanel(),
     );
   }
 }
