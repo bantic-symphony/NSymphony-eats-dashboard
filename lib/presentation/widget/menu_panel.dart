@@ -223,7 +223,7 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
                     Text(
                       day.weekday.displayName.toUpperCase(),
                       style: TextStyle(
-                        fontSize: isToday ? 52 : 34,
+                        fontSize: isToday ? 48 : 32,
                         fontWeight: FontWeight.w800,
                         color: isToday ? AppColors.primary : AppColors.textPrimary,
                         letterSpacing: 0.8,
