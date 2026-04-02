@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nsymphony_eats_dashboard/core/constants/app_constants.dart';
 import 'package:nsymphony_eats_dashboard/core/di/service_locator.dart';
 import 'package:nsymphony_eats_dashboard/presentation/bloc/attendance/attendance_bloc.dart';
 import 'package:nsymphony_eats_dashboard/presentation/bloc/attendance/attendance_event.dart';
 import 'package:nsymphony_eats_dashboard/presentation/bloc/menu/menu_bloc.dart';
 import 'package:nsymphony_eats_dashboard/presentation/bloc/menu/menu_event.dart';
 import 'package:nsymphony_eats_dashboard/presentation/resources/app_colors.dart';
+import 'package:nsymphony_eats_dashboard/presentation/resources/app_dimens.dart';
 import 'package:nsymphony_eats_dashboard/presentation/widget/novi_sad_clock.dart';
 import 'package:nsymphony_eats_dashboard/presentation/widget/menu_panel.dart';
 
@@ -41,20 +43,20 @@ class _DashboardPageContent extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.primary,
-        elevation: 4,
-        toolbarHeight: 80,
+        elevation: AppConstants.appBarElevation,
+        toolbarHeight: AppConstants.appBarToolbarHeight,
         title: const Row(
           children: [
             Icon(
               Icons.restaurant_menu,
-              size: 36,
+              size: AppConstants.appBarIconSize,
               color: AppColors.textOnPrimary,
             ),
-            SizedBox(width: 16),
+            SizedBox(width: AppDimens.spacing16),
             Text(
-              'NSymphony Eats - Weekly Menu',
+              AppConstants.appBarTitle,
               style: TextStyle(
-                fontSize: 28,
+                fontSize: AppConstants.appBarTitleFontSize,
                 fontWeight: FontWeight.w700,
                 color: AppColors.textOnPrimary,
               ),
@@ -63,7 +65,7 @@ class _DashboardPageContent extends StatelessWidget {
         ),
         actions: const [
           Padding(
-            padding: EdgeInsets.only(right: 24),
+            padding: EdgeInsets.only(right: AppConstants.appBarClockPaddingRight),
             child: NoviSadClock(),
           ),
         ],

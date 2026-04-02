@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:nsymphony_eats_dashboard/core/constants/app_constants.dart';
 import 'package:nsymphony_eats_dashboard/presentation/bloc/attendance/attendance_bloc.dart';
 import 'package:nsymphony_eats_dashboard/presentation/bloc/attendance/attendance_event.dart';
 import 'package:nsymphony_eats_dashboard/presentation/bloc/attendance/attendance_state.dart';
@@ -19,9 +20,9 @@ class AttendancePanel extends StatelessWidget {
         builder: (context, state) {
           if (state is AttendanceLoading) {
             return Container(
-              color: Colors.white.withValues(alpha: 0.5),
+              color: Colors.white.withValues(alpha: AppConstants.opacityWhiteOverlay),
               child: const Center(
-                child: CircularProgressIndicator(strokeWidth: 3),
+                child: CircularProgressIndicator(strokeWidth: AppConstants.loadingStrokeWidthThin),
               ),
             );
           }
@@ -32,7 +33,7 @@ class AttendancePanel extends StatelessWidget {
 
           if (state is AttendanceError) {
             return Container(
-              color: AppColors.error.withValues(alpha: 0.1),
+              color: AppColors.error.withValues(alpha: AppConstants.opacityErrorBg),
               child: Center(
                 child: Padding(
                   padding: const EdgeInsets.all(AppDimens.spacing24),
@@ -41,7 +42,7 @@ class AttendancePanel extends StatelessWidget {
                     children: [
                       const Icon(
                         Icons.error_outline,
-                        size: 40,
+                        size: AppConstants.iconSizeError,
                         color: AppColors.error,
                       ),
                       const SizedBox(width: AppDimens.spacing16),
@@ -51,9 +52,9 @@ class AttendancePanel extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              'Error Loading Data',
+                              AppConstants.errorLoadingData,
                               style: TextStyle(
-                                fontSize: 18,
+                                fontSize: AppConstants.fontSizeErrorTitle,
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.error,
                               ),
@@ -63,7 +64,7 @@ class AttendancePanel extends StatelessWidget {
                               state.message,
                               style: const TextStyle(
                                 color: AppColors.textSecondary,
-                                fontSize: 14,
+                                fontSize: AppConstants.fontSizeErrorMessage,
                               ),
                             ),
                           ],
@@ -76,8 +77,8 @@ class AttendancePanel extends StatelessWidget {
                               .read<AttendanceBloc>()
                               .add(const LoadTodayMealPreferenceCounts());
                         },
-                        icon: const Icon(Icons.refresh, size: 20),
-                        label: const Text('Retry', style: TextStyle(fontSize: 16)),
+                        icon: const Icon(Icons.refresh, size: AppConstants.iconSizeRefresh),
+                        label: const Text(AppConstants.labelRetry, style: TextStyle(fontSize: AppConstants.fontSizeRetryButton)),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                             horizontal: AppDimens.spacing20,
@@ -102,7 +103,7 @@ class AttendancePanel extends StatelessWidget {
     final counts = state.counts;
 
     return Container(
-      color: Colors.white.withValues(alpha: 0.5),
+      color: Colors.white.withValues(alpha: AppConstants.opacityWhiteOverlay),
       padding: const EdgeInsets.symmetric(
         horizontal: AppDimens.spacing48,
         vertical: AppDimens.spacing8,
@@ -116,27 +117,27 @@ class AttendancePanel extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Today',
+                AppConstants.labelToday,
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: AppConstants.fontSizeToday,
                   fontWeight: FontWeight.w700,
                   color: AppColors.textPrimary,
                 ),
               ),
               const SizedBox(height: AppDimens.spacing4),
               Text(
-                DateFormat('MMMM d, yyyy').format(counts.date),
+                DateFormat(AppConstants.dateFormatFull).format(counts.date),
                 style: const TextStyle(
-                  fontSize: 13,
+                  fontSize: AppConstants.fontSizeDateLabel,
                   fontWeight: FontWeight.w500,
                   color: AppColors.textSecondary,
                 ),
               ),
               const SizedBox(height: AppDimens.spacing4),
               Text(
-                DateFormat('HH:mm').format(DateTime.now()),
+                DateFormat(AppConstants.timeFormat24h).format(DateTime.now()),
                 style: const TextStyle(
-                  fontSize: 12,
+                  fontSize: AppConstants.fontSizeTime,
                   color: AppColors.textSecondary,
                   fontWeight: FontWeight.w500,
                 ),
@@ -152,7 +153,7 @@ class AttendancePanel extends StatelessWidget {
               children: [
                 Expanded(
                   child: _buildCompactStatCard(
-                    label: 'Regular',
+                    label: AppConstants.labelRegular,
                     count: counts.regularCount,
                     color: AppColors.regular,
                     icon: Icons.restaurant,
@@ -161,7 +162,7 @@ class AttendancePanel extends StatelessWidget {
                 const SizedBox(width: AppDimens.spacing12),
                 Expanded(
                   child: _buildCompactStatCard(
-                    label: 'Vegetarian',
+                    label: AppConstants.labelVegetarian,
                     count: counts.vegetarianCount,
                     color: AppColors.vegetarian,
                     icon: Icons.eco,
@@ -171,7 +172,7 @@ class AttendancePanel extends StatelessWidget {
                   const SizedBox(width: AppDimens.spacing12),
                   Expanded(
                     child: _buildCompactStatCard(
-                      label: 'No Pref.',
+                      label: AppConstants.labelNoPreference,
                       count: counts.noPreferenceCount,
                       color: AppColors.warning,
                       icon: Icons.help_outline,
@@ -198,29 +199,29 @@ class AttendancePanel extends StatelessWidget {
         vertical: AppDimens.spacing8,
       ),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.95),
+        color: Colors.white.withValues(alpha: AppConstants.opacityWhiteOverlayStrong),
         borderRadius: BorderRadius.circular(AppDimens.radiusLarge),
         border: Border.all(
-          color: color.withValues(alpha: 0.3),
-          width: 1.5,
+          color: color.withValues(alpha: AppConstants.opacityStatBorder),
+          width: AppConstants.statCardBorderWidth,
         ),
         boxShadow: [
           BoxShadow(
-            color: color.withValues(alpha: 0.1),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
+            color: color.withValues(alpha: AppConstants.opacityStatShadow),
+            blurRadius: AppConstants.statCardShadowBlur,
+            offset: const Offset(0, AppConstants.statCardShadowOffsetY),
           ),
         ],
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 22, color: color),
+          Icon(icon, size: AppConstants.iconSizeStat, color: color),
           const SizedBox(height: AppDimens.spacing4),
           Text(
             '$count',
             style: TextStyle(
-              fontSize: 36,
+              fontSize: AppConstants.fontSizeStatCount,
               fontWeight: FontWeight.w900,
               color: color,
               height: 1,
@@ -230,10 +231,10 @@ class AttendancePanel extends StatelessWidget {
           Text(
             label.toUpperCase(),
             style: const TextStyle(
-              fontSize: 11,
+              fontSize: AppConstants.fontSizeChipLabel,
               fontWeight: FontWeight.w700,
               color: AppColors.textSecondary,
-              letterSpacing: 0.6,
+              letterSpacing: AppConstants.letterSpacingStatLabel,
             ),
             textAlign: TextAlign.center,
           ),

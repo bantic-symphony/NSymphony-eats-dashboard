@@ -1,24 +1,25 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:nsymphony_eats_dashboard/core/constants/app_constants.dart';
 import 'package:nsymphony_eats_dashboard/presentation/resources/app_colors.dart';
 
-/// A clock widget displaying Belgrade time (Europe/Belgrade timezone) in 24h format.
+/// A clock widget displaying Novi Sad time (Europe/Belgrade timezone) in 24h format.
 class NoviSadClock extends StatefulWidget {
   const NoviSadClock({super.key});
 
   @override
-  State<NoviSadClock> createState() => _BelgradeClockState();
+  State<NoviSadClock> createState() => _NoviSadClockState();
 }
 
-class _BelgradeClockState extends State<NoviSadClock> {
+class _NoviSadClockState extends State<NoviSadClock> {
   late Timer _timer;
-  late DateTime _belgradeTime;
+  late DateTime _noviSadTime;
 
   @override
   void initState() {
     super.initState();
     _updateTime();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) => _updateTime());
+    _timer = Timer.periodic(const Duration(seconds: AppConstants.clockUpdateIntervalSeconds), (_) => _updateTime());
   }
 
   @override
@@ -28,17 +29,17 @@ class _BelgradeClockState extends State<NoviSadClock> {
   }
 
   void _updateTime() {
-    // Belgrade is UTC+1 (CET) or UTC+2 (CEST during daylight saving)
+    // Novi Sad is UTC+1 (CET) or UTC+2 (CEST during daylight saving)
     final now = DateTime.now().toUtc();
-    final belgradeOffset = _getBelgradeOffset(now);
+    final noviSadOffset = _getNoviSadOffset(now);
     setState(() {
-      _belgradeTime = now.add(Duration(hours: belgradeOffset));
+      _noviSadTime = now.add(Duration(hours: noviSadOffset));
     });
   }
 
-  /// Returns the Belgrade timezone offset from UTC.
-  /// Belgrade observes CET (UTC+1) in winter and CEST (UTC+2) in summer.
-  int _getBelgradeOffset(DateTime utcTime) {
+  /// Returns the Novi Sad timezone offset from UTC.
+  /// Novi Sad observes CET (UTC+1) in winter and CEST (UTC+2) in summer.
+  int _getNoviSadOffset(DateTime utcTime) {
     // DST in Europe: last Sunday of March to last Sunday of October
     final year = utcTime.year;
 
@@ -51,27 +52,27 @@ class _BelgradeClockState extends State<NoviSadClock> {
     final dstEnd = octoberEnd.subtract(Duration(days: octoberEnd.weekday % 7));
 
     // DST transition happens at 1:00 UTC
-    final dstStartUtc = DateTime.utc(year, dstStart.month, dstStart.day, 1);
-    final dstEndUtc = DateTime.utc(year, dstEnd.month, dstEnd.day, 1);
+    final dstStartUtc = DateTime.utc(year, dstStart.month, dstStart.day, AppConstants.dstTransitionHourUtc);
+    final dstEndUtc = DateTime.utc(year, dstEnd.month, dstEnd.day, AppConstants.dstTransitionHourUtc);
 
     if (utcTime.isAfter(dstStartUtc) && utcTime.isBefore(dstEndUtc)) {
-      return 2; // CEST (summer time)
+      return AppConstants.noviSadSummerOffset; // CEST (summer time)
     }
-    return 1; // CET (winter time)
+    return AppConstants.noviSadWinterOffset; // CET (winter time)
   }
 
   @override
   Widget build(BuildContext context) {
-    final hours = _belgradeTime.hour.toString().padLeft(2, '0');
-    final minutes = _belgradeTime.minute.toString().padLeft(2, '0');
+    final hours = _noviSadTime.hour.toString().padLeft(2, '0');
+    final minutes = _noviSadTime.minute.toString().padLeft(2, '0');
 
     return Text(
       '$hours:$minutes',
       style: const TextStyle(
-        fontSize: 48,
+        fontSize: AppConstants.clockFontSize,
         fontWeight: FontWeight.w600,
         color: AppColors.textOnPrimary,
-        letterSpacing: 2,
+        letterSpacing: AppConstants.clockLetterSpacing,
       ),
     );
   }

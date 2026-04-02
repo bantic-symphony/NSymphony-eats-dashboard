@@ -1,11 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:nsymphony_eats_dashboard/core/constants/app_constants.dart';
 import 'package:nsymphony_eats_dashboard/core/di/service_locator.dart';
 import 'package:nsymphony_eats_dashboard/core/utils/app_logger.dart';
 import 'package:nsymphony_eats_dashboard/firebase_options.dart';
 import 'package:nsymphony_eats_dashboard/presentation/page/dashboard_page.dart';
 import 'package:nsymphony_eats_dashboard/presentation/resources/app_colors.dart';
+import 'package:nsymphony_eats_dashboard/presentation/resources/app_dimens.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,7 +46,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Symphony Eats Dashboard',
+      title: AppConstants.appTitle,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
@@ -58,7 +60,7 @@ class MyApp extends StatelessWidget {
         cardTheme: const CardThemeData(
           elevation: 2,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(12)),
+            borderRadius: BorderRadius.all(Radius.circular(AppDimens.radiusLarge)),
           ),
         ),
       ),

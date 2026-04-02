@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:nsymphony_eats_dashboard/core/constants/app_constants.dart';
 import 'package:nsymphony_eats_dashboard/domain/model/day_menu.dart';
 import 'package:nsymphony_eats_dashboard/domain/model/menu_item.dart';
 import 'package:nsymphony_eats_dashboard/presentation/bloc/attendance/attendance_bloc.dart';
@@ -28,15 +29,15 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _controllers = List.generate(
-      5,
+      AppConstants.weekdayCount,
       (index) => AnimationController(
-        duration: Duration(milliseconds: 600 + (index * 100)),
+        duration: Duration(milliseconds: AppConstants.animationBaseDuration + (index * AppConstants.animationStaggerDelay)),
         vsync: this,
       ),
     );
 
     _slideAnimations = _controllers.map((controller) {
-      return Tween<double>(begin: 50, end: 0).animate(
+      return Tween<double>(begin: AppConstants.animationSlideOffset, end: 0).animate(
         CurvedAnimation(parent: controller, curve: Curves.easeOutCubic),
       );
     }).toList();
@@ -49,7 +50,7 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
 
     // Start animations with delay
     for (int i = 0; i < _controllers.length; i++) {
-      Future.delayed(Duration(milliseconds: i * 100), () {
+      Future.delayed(Duration(milliseconds: i * AppConstants.animationStaggerDelay), () {
         if (mounted) _controllers[i].forward();
       });
     }
@@ -78,7 +79,7 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
           builder: (context, state) {
             if (state is MenuLoading) {
               return const Center(
-                child: CircularProgressIndicator(strokeWidth: 4),
+                child: CircularProgressIndicator(strokeWidth: AppConstants.loadingStrokeWidth),
               );
             }
 
@@ -93,7 +94,7 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
               children: [
                 const Icon(
                   Icons.restaurant_menu_outlined,
-                  size: 96,
+                  size: AppConstants.iconSizeEmptyState,
                   color: AppColors.textSecondary,
                 ),
                 const SizedBox(height: AppDimens.spacing24),
@@ -101,7 +102,7 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
                   state.message,
                   style: const TextStyle(
                     color: AppColors.textSecondary,
-                    fontSize: 24,
+                    fontSize: AppConstants.fontSizeEmptyStateMessage,
                     fontWeight: FontWeight.w500,
                   ),
                   textAlign: TextAlign.center,
@@ -118,7 +119,7 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
               children: [
                 const Icon(
                   Icons.error_outline,
-                  size: 96,
+                  size: AppConstants.iconSizeEmptyState,
                   color: AppColors.error,
                 ),
                 const SizedBox(height: AppDimens.spacing24),
@@ -126,7 +127,7 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
                   state.message,
                   style: const TextStyle(
                     color: AppColors.error,
-                    fontSize: 24,
+                    fontSize: AppConstants.fontSizeEmptyStateMessage,
                     fontWeight: FontWeight.w500,
                   ),
                   textAlign: TextAlign.center,
@@ -161,37 +162,37 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
   }
 
   Widget _buildDayCard(BuildContext context, DayMenu day) {
-    final dateFormat = DateFormat('MMM d');
+    final dateFormat = DateFormat(AppConstants.dateFormatMonthDay);
     final isToday = DateUtils.isSameDay(day.date, DateTime.now());
 
     final card = Container(
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: isToday ? 1.0 : 0.75),
-        borderRadius: BorderRadius.circular(20),
+        color: Colors.white.withValues(alpha: isToday ? AppConstants.opacityCardToday : AppConstants.opacityCardNormal),
+        borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
         boxShadow: isToday
             ? [
                 BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.40),
-                  blurRadius: 40,
-                  spreadRadius: 4,
-                  offset: const Offset(0, 4),
+                  color: AppColors.primary.withValues(alpha: AppConstants.opacityTodayShadow),
+                  blurRadius: AppConstants.cardTodayShadowBlur,
+                  spreadRadius: AppConstants.cardTodayShadowSpread,
+                  offset: const Offset(0, AppConstants.cardTodayShadowOffsetY),
                 ),
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.08),
+                  color: Colors.black.withValues(alpha: AppConstants.opacityBlackShadow),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
               ]
             : [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.04),
-                  blurRadius: 10,
-                  offset: const Offset(0, 3),
+                  color: Colors.black.withValues(alpha: AppConstants.opacityBlackShadowLight),
+                  blurRadius: AppConstants.cardNormalShadowBlur,
+                  offset: const Offset(0, AppConstants.cardNormalShadowOffsetY),
                 ),
               ],
         border: isToday
-            ? Border.all(color: AppColors.primary.withValues(alpha: 0.45), width: 2.5)
-            : Border.all(color: Colors.black.withValues(alpha: 0.08), width: 1.5),
+            ? Border.all(color: AppColors.primary.withValues(alpha: AppConstants.opacityTodayBorder), width: AppConstants.cardBorderWidthToday)
+            : Border.all(color: Colors.black.withValues(alpha: AppConstants.opacityBlackShadow), width: AppConstants.cardBorderWidthNormal),
       ),
       child: _buildDayCardContent(day, dateFormat, isToday),
     );
@@ -200,9 +201,6 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
   }
 
   Widget _buildDayCardContent(DayMenu day, DateFormat dateFormat, bool isToday) {
-    // Reserve space at the bottom for the attendance chip bar when showing today
-    const double chipsAreaHeight = 130.0;
-
     return Stack(
       children: [
         // Card content fills the card, with bottom space reserved for chips
@@ -212,7 +210,7 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
               AppDimens.spacing24,
               AppDimens.spacing24,
               AppDimens.spacing24,
-              isToday ? chipsAreaHeight : AppDimens.spacing24,
+              isToday ? AppConstants.chipsAreaHeight : AppDimens.spacing24,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -223,10 +221,10 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
                     Text(
                       day.weekday.displayName.toUpperCase(),
                       style: TextStyle(
-                        fontSize: isToday ? 48 : 32,
+                        fontSize: isToday ? AppConstants.fontSizeWeekdayToday : AppConstants.fontSizeWeekdayNormal,
                         fontWeight: FontWeight.w800,
                         color: isToday ? AppColors.primary : AppColors.textPrimary,
-                        letterSpacing: 0.8,
+                        letterSpacing: AppConstants.letterSpacingWeekday,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -234,7 +232,7 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
                     Text(
                       dateFormat.format(day.date),
                       style: TextStyle(
-                        fontSize: isToday ? 34 : 26,
+                        fontSize: isToday ? AppConstants.fontSizeDateToday : AppConstants.fontSizeDateNormal,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textSecondary,
                       ),
@@ -243,7 +241,7 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
                   ],
                 ),
                 const SizedBox(height: AppDimens.spacing16),
-                Container(height: 2, color: AppColors.divider.withValues(alpha: 0.2)),
+                Container(height: AppConstants.dividerHeight, color: AppColors.divider.withValues(alpha: AppConstants.opacityDivider)),
                 const SizedBox(height: AppDimens.spacing16),
 
                 // Menu content
@@ -256,7 +254,7 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
                       mealType: MealType.regular,
                       icon: Icons.restaurant,
                       iconColor: AppColors.primary,
-                      label: 'Regular',
+                      label: AppConstants.labelRegular,
                       items: day.regular,
                       isToday: isToday,
                     ),
@@ -269,7 +267,7 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
                       mealType: MealType.vegetarian,
                       icon: Icons.eco,
                       iconColor: AppColors.success,
-                      label: 'Vegetarian',
+                      label: AppConstants.labelVegetarian,
                       items: day.vege,
                       isToday: isToday,
                     ),
@@ -300,7 +298,7 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
                         child: _buildCountChip(
                           count: counts.regularCount,
                           color: AppColors.regular,
-                          label: 'Regular',
+                          label: AppConstants.labelRegular,
                         ),
                       ),
                       const SizedBox(width: AppDimens.spacing8),
@@ -308,7 +306,7 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
                         child: _buildCountChip(
                           count: counts.vegetarianCount,
                           color: AppColors.vegetarian,
-                          label: 'Vegetarian',
+                          label: AppConstants.labelVegetarian,
                         ),
                       ),
                       if (counts.noPreferenceCount > 0) ...[
@@ -317,7 +315,7 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
                           child: _buildCountChip(
                             count: counts.noPreferenceCount,
                             color: AppColors.warning,
-                            label: 'No Pref.',
+                            label: AppConstants.labelNoPreference,
                           ),
                         ),
                       ],
@@ -336,7 +334,7 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
       children: [
         const Icon(
           Icons.event_busy,
-          size: 48,
+          size: AppConstants.iconSizeClosedNote,
           color: AppColors.textSecondary,
         ),
         const SizedBox(height: AppDimens.spacing12),
@@ -345,8 +343,8 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
           style: const TextStyle(
             color: AppColors.textSecondary,
             fontStyle: FontStyle.italic,
-            fontSize: 20,
-            height: 1.4,
+            fontSize: AppConstants.fontSizeNote,
+            height: AppConstants.lineHeightNote,
           ),
           textAlign: TextAlign.center,
         ),
@@ -359,17 +357,17 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
       children: [
         const Icon(
           Icons.info_outline,
-          size: 48,
+          size: AppConstants.iconSizeClosedNote,
           color: AppColors.textSecondary,
         ),
         const SizedBox(height: AppDimens.spacing12),
         Text(
-          note ?? 'No menu available',
+          note ?? AppConstants.noMenuAvailable,
           style: const TextStyle(
             color: AppColors.textSecondary,
             fontStyle: FontStyle.italic,
-            fontSize: 20,
-            height: 1.4,
+            fontSize: AppConstants.fontSizeNote,
+            height: AppConstants.lineHeightNote,
           ),
           textAlign: TextAlign.center,
         ),
@@ -397,7 +395,7 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
           Text(
             '$count',
             style: const TextStyle(
-              fontSize: 48,
+              fontSize: AppConstants.fontSizeChipCount,
               fontWeight: FontWeight.w900,
               color: Colors.white,
               height: 1,
@@ -407,10 +405,10 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
           Text(
             label.toUpperCase(),
             style: TextStyle(
-              fontSize: 11,
+              fontSize: AppConstants.fontSizeChipLabel,
               fontWeight: FontWeight.w700,
-              color: Colors.white.withValues(alpha: 0.8),
-              letterSpacing: 0.8,
+              color: Colors.white.withValues(alpha: AppConstants.opacityChipLabel),
+              letterSpacing: AppConstants.letterSpacingChipLabel,
             ),
           ),
         ],
@@ -434,13 +432,13 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: isToday ? 34 : 28, color: iconColor),
+            Icon(icon, size: isToday ? AppConstants.iconSizeMealToday : AppConstants.iconSizeMealNormal, color: iconColor),
             const SizedBox(width: AppDimens.spacing8),
             Flexible(
               child: Text(
                 label,
                 style: TextStyle(
-                  fontSize: isToday ? 30 : 24,
+                  fontSize: isToday ? AppConstants.fontSizeMealLabelToday : AppConstants.fontSizeMealLabelNormal,
                   fontWeight: FontWeight.w700,
                   color: iconColor,
                 ),
@@ -456,9 +454,9 @@ class _MenuPanelState extends State<MenuPanel> with TickerProviderStateMixin {
             child: Text(
               '• ${item.name}',
               style: TextStyle(
-                fontSize: isToday ? 28 : 22,
+                fontSize: isToday ? AppConstants.fontSizeMealItemToday : AppConstants.fontSizeMealItemNormal,
                 color: AppColors.textPrimary,
-                height: 1.5,
+                height: AppConstants.lineHeightMealItem,
                 fontWeight: FontWeight.w500,
               ),
             ),

@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:nsymphony_eats_dashboard/core/constants/app_constants.dart';
 
 /// Animated decorative background shapes widget for the dashboard
 class DecorativeBackground extends StatefulWidget {
@@ -31,53 +32,53 @@ class _DecorativeBackgroundState extends State<DecorativeBackground>
 
     // Rotation controllers
     _rotationController1 = AnimationController(
-      duration: const Duration(seconds: 80),
+      duration: const Duration(seconds: AppConstants.bgRotation1Duration),
       vsync: this,
     )..repeat();
 
     _rotationController2 = AnimationController(
-      duration: const Duration(seconds: 70),
+      duration: const Duration(seconds: AppConstants.bgRotation2Duration),
       vsync: this,
     )..repeat(reverse: true);
 
     _rotationController3 = AnimationController(
-      duration: const Duration(seconds: 100),
+      duration: const Duration(seconds: AppConstants.bgRotation3Duration),
       vsync: this,
     )..repeat();
 
     _rotationController4 = AnimationController(
-      duration: const Duration(seconds: 75),
+      duration: const Duration(seconds: AppConstants.bgRotation4Duration),
       vsync: this,
     )..repeat(reverse: true);
 
     _rotationController5 = AnimationController(
-      duration: const Duration(seconds: 90),
+      duration: const Duration(seconds: AppConstants.bgRotation5Duration),
       vsync: this,
     )..repeat();
 
     // Movement controllers
     _movementController1 = AnimationController(
-      duration: const Duration(seconds: 50),
+      duration: const Duration(seconds: AppConstants.bgMovement1Duration),
       vsync: this,
     )..repeat();
 
     _movementController2 = AnimationController(
-      duration: const Duration(seconds: 60),
+      duration: const Duration(seconds: AppConstants.bgMovement2Duration),
       vsync: this,
     )..repeat();
 
     _movementController3 = AnimationController(
-      duration: const Duration(seconds: 55),
+      duration: const Duration(seconds: AppConstants.bgMovement3Duration),
       vsync: this,
     )..repeat();
 
     _movementController4 = AnimationController(
-      duration: const Duration(seconds: 65),
+      duration: const Duration(seconds: AppConstants.bgMovement4Duration),
       vsync: this,
     )..repeat();
 
     _movementController5 = AnimationController(
-      duration: const Duration(seconds: 70),
+      duration: const Duration(seconds: AppConstants.bgMovement5Duration),
       vsync: this,
     )..repeat();
   }
@@ -108,19 +109,19 @@ class _DecorativeBackgroundState extends State<DecorativeBackground>
           animation: _movementController1,
           builder: (context, child) {
             final angle = _movementController1.value * 2 * math.pi;
-            final offsetX = 40 * math.cos(angle);
-            final offsetY = 50 * math.sin(angle);
+            final offsetX = AppConstants.bgShape1OffsetX * math.cos(angle);
+            final offsetY = AppConstants.bgShape1OffsetY * math.sin(angle);
             return Positioned(
-              top: 40 + offsetY,
-              left: 50 + offsetX,
+              top: AppConstants.bgShape1Top + offsetY,
+              left: AppConstants.bgShape1Left + offsetX,
               child: RotationTransition(
                 turns: _rotationController1,
                 child: Opacity(
-                  opacity: 0.15,
+                  opacity: AppConstants.bgShape1Opacity,
                   child: Image.asset(
-                    'assets/images/shapes/shape_yellow_stripes.png',
-                    width: 150,
-                    height: 150,
+                    AppConstants.shapeYellowStripes,
+                    width: AppConstants.bgShape1Size,
+                    height: AppConstants.bgShape1Size,
                   ),
                 ),
               ),
@@ -133,19 +134,19 @@ class _DecorativeBackgroundState extends State<DecorativeBackground>
           animation: _movementController2,
           builder: (context, child) {
             final angle = _movementController2.value * 2 * math.pi;
-            final offsetY = 60 * math.sin(angle);
-            final offsetX = 30 * math.cos(angle);
+            final offsetY = AppConstants.bgShape2OffsetY * math.sin(angle);
+            final offsetX = AppConstants.bgShape2OffsetX * math.cos(angle);
             return Positioned(
-              top: 60 + offsetY,
-              right: 100 + offsetX,
+              top: AppConstants.bgShape2Top + offsetY,
+              right: AppConstants.bgShape2Right + offsetX,
               child: RotationTransition(
                 turns: Tween<double>(begin: 1.0, end: 0.0).animate(_rotationController2),
                 child: Opacity(
-                  opacity: 0.12,
+                  opacity: AppConstants.bgShape2Opacity,
                   child: Image.asset(
-                    'assets/images/shapes/shape_purple_circles.png',
-                    width: 180,
-                    height: 180,
+                    AppConstants.shapePurpleCircles,
+                    width: AppConstants.bgShape2Size,
+                    height: AppConstants.bgShape2Size,
                   ),
                 ),
               ),
@@ -158,19 +159,19 @@ class _DecorativeBackgroundState extends State<DecorativeBackground>
           animation: _movementController3,
           builder: (context, child) {
             final angle = _movementController3.value * 2 * math.pi;
-            final offsetX = 70 * math.sin(angle);
-            final offsetY = 40 * math.cos(angle);
+            final offsetX = AppConstants.bgShape3OffsetX * math.sin(angle);
+            final offsetY = AppConstants.bgShape3OffsetY * math.cos(angle);
             return Positioned(
-              bottom: 80 + offsetY,
-              left: 60 + offsetX,
+              bottom: AppConstants.bgShape3Bottom + offsetY,
+              left: AppConstants.bgShape3Left + offsetX,
               child: RotationTransition(
                 turns: _rotationController3,
                 child: Opacity(
-                  opacity: 0.1,
+                  opacity: AppConstants.bgShape3Opacity,
                   child: Image.asset(
-                    'assets/images/shapes/shape_coral_curves.png',
-                    width: 200,
-                    height: 200,
+                    AppConstants.shapeCoralCurves,
+                    width: AppConstants.bgShape3Size,
+                    height: AppConstants.bgShape3Size,
                   ),
                 ),
               ),
@@ -183,19 +184,19 @@ class _DecorativeBackgroundState extends State<DecorativeBackground>
           animation: _movementController4,
           builder: (context, child) {
             final angle = _movementController4.value * 2 * math.pi;
-            final offsetX = 50 * math.cos(angle + math.pi / 4);
-            final offsetY = 50 * math.sin(angle + math.pi / 4);
+            final offsetX = AppConstants.bgShape4OffsetX * math.cos(angle + math.pi / 4);
+            final offsetY = AppConstants.bgShape4OffsetY * math.sin(angle + math.pi / 4);
             return Positioned(
-              bottom: 60 + offsetY,
-              right: 80 + offsetX,
+              bottom: AppConstants.bgShape4Bottom + offsetY,
+              right: AppConstants.bgShape4Right + offsetX,
               child: RotationTransition(
                 turns: Tween<double>(begin: 1.0, end: 0.0).animate(_rotationController4),
                 child: Opacity(
-                  opacity: 0.13,
+                  opacity: AppConstants.bgShape4Opacity,
                   child: Image.asset(
-                    'assets/images/shapes/shape_yellow_curves.png',
-                    width: 250,
-                    height: 250,
+                    AppConstants.shapeYellowCurves,
+                    width: AppConstants.bgShape4Size,
+                    height: AppConstants.bgShape4Size,
                   ),
                 ),
               ),
@@ -208,19 +209,19 @@ class _DecorativeBackgroundState extends State<DecorativeBackground>
           animation: _movementController5,
           builder: (context, child) {
             final angle = _movementController5.value * 2 * math.pi;
-            final offsetX = 60 * math.cos(angle);
-            final offsetY = 80 * math.sin(angle);
+            final offsetX = AppConstants.bgShape5OffsetX * math.cos(angle);
+            final offsetY = AppConstants.bgShape5OffsetY * math.sin(angle);
             return Positioned(
-              top: size.height * 0.4 + offsetY,
-              left: size.width * 0.25 + offsetX,
+              top: size.height * AppConstants.bgShape5TopFactor + offsetY,
+              left: size.width * AppConstants.bgShape5LeftFactor + offsetX,
               child: RotationTransition(
                 turns: _rotationController5,
                 child: Opacity(
-                  opacity: 0.08,
+                  opacity: AppConstants.bgShape5Opacity,
                   child: Image.asset(
-                    'assets/images/shapes/shape_coral_semicircle.png',
-                    width: 220,
-                    height: 220,
+                    AppConstants.shapeCoralSemicircle,
+                    width: AppConstants.bgShape5Size,
+                    height: AppConstants.bgShape5Size,
                   ),
                 ),
               ),
